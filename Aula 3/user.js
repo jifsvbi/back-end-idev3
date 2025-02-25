@@ -1,15 +1,13 @@
 class User{
-    constructor(id,nome,email){
-        this.id = id;
-        this.nome = nome;
-        this.email = email;
-    }
-}
-class Admin extends User{
-    constructor(id,nome,email,nivelAcesso){
-        super(id,nome,email)
-        this.nivelAcesso = nivelAcesso
+    constructor(id, nome, email){
+        this.id = id; // id do usuario
+        this.nome = nome; // nome do usuario
+        this.email = email; // email do usuario
+        this.senha = senha;
+        this.endereço = endereço;
+        this.telefone = telefone;
+        this.cpf = cpf;
     }
 }
 
-module.exports = User //Exporta a classe User
+module.exports = User; // exportar o modulo

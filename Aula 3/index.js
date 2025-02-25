@@ -10,7 +10,7 @@ app.post("/users", (req, res) =>{
     const {nome, email} = req.body
     if(!nome || !email){
         return res.status(400).json
-        ({error: "Nome e email são obrigatorios"})
+        ({error: "Nome, email e senha são obrigatorios"})
     }
 
     const user = userService.addUser(nome, email);
