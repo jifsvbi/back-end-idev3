@@ -1,9 +1,13 @@
 const User = require("./user");
+const path = require('path');
+const fs = require('fs');
 
 class userService{
     constructor(){
         this.Users = []; //Array para armazenar user
+        
         this.nextid = 1; //contador para gerar id
+        
     }
 
     addUser(nome, email){
