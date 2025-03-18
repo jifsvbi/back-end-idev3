@@ -1,44 +1,57 @@
 const express = require('express');
-const userService = require('./userService');
+const userService = require('./userService')
 
-const app = express(); // nome qualquer para express
-app.use(express.json()); // vou habilitar json no express
+const app = express()
+app.use(express.json()); //Vou habilitar json no express
 
-//rota para criar usuario
+//rota para criar usuário
 
-app.post("/users", (req, res) =>{
-    const {nome, email} = req.body
-    if(!nome || !email){
+app.post('/users', (req,res) =>{
+    const {nome, email, senha, endereco, telefone, cpf} = req.body;
+    if(!nome || !email || !senha || !endereco || !telefone || !cpf){
         return res.status(400).json
-        ({error: "Nome, email e senha são obrigatorios"})
+        ({error: "Nome, email, senha, endereço, telefone e CPF são dados obrigatórios"})
     }
 
-    const user = userService.addUser(nome, email);
+    const user = userService.addUser(nome, email, senha, endereco, telefone, cpf);
     res.status(200).json({user});
 })
 
-//rota para listar todos os usuarios
+//rota para mostrar os usuários
+
 app.get("/users", (req, res) =>{
-    res.json(userService.getUsers());
+    res.json(userService.getUsers())
 });
 
-//Rota para excluir um usuário pelo ID
-app.delete("/users/:id", (req, res) => {
+app.delete("/users/:id", (req, res) =>{
+    const id = parseInt(req.params.id);//Converte o ID para número
+    try{
+        const resultado = userService.deleteUser(id);//Tenta deletar o usuário
+        res.status(200).json(resultado);//Se conseguir deletar, retorna 200
+    }
+    catch{
+        console.log("Erro ao deletar o usuário", erro)
+    }
+    userService.deleteUser(id);
+    res.status(200).json({message: "Usuário deletado com sucesso"})
+})
+
+app.put("/users/:id", (req, res) => {
     const id = parseInt(req.params.id);
-    //converter o ID para número
+    const { nome, email, senha, endereco, telefone, cpf } = req.body;
     try {
-        const resultado = userService.deleteUser(id);
-        //Tenta excluir o usuário
+        const resultado = userService.updateUser(id, nome, email, senha, endereco, telefone, cpf);
+        if (!resultado) {
+            return res.status(404).json({ error: "Usuário não encontrado" });
+        }
         res.status(200).json(resultado);
-        //retornar a mensagem de sucesso
-    } catch (erro){
-        res.status(404).json({ error: erro.message});
-        //Retornar a mensagem de erro
+    } catch (erro) {
+        console.log("Erro ao atualizar o usuário", erro);
+        res.status(500).json({ error: "Erro ao atualizar o usuário" });
     }
 });
 
 const port = 3000;
-
-app.listen(port, () =>{
-    console.log("Servidor rodando na porta:", port);
+app.listen(port, ()=>{
+    console.log("Servidor rodando na porta", port);
 })
