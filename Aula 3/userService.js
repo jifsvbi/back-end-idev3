@@ -42,6 +42,10 @@ saveUsers(){//função para salvar os arquivos
 
     async addUser(nome, email, senha, endereco, telefone, cpf){//função para adicionar um usuário
         try{
+        const cpfexistente = this.user.some(user => user.cpf === cpf)
+        if(cpfexistente){
+            throw new error('CPF já cadastrado');
+        }
         const senhaCripto = await bcrypt.hash(senha, 10);
         const user = new User(this.nextid++, nome, email, senhaCripto, endereco, telefone, cpf);
         this.users.push(user);
