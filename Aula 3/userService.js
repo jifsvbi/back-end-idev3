@@ -2,6 +2,7 @@ const User = require('./user');
 const path = require('path'); // modulo para manipular caminhos
 const fs = require('fs'); // modulo para manipular arquivos
 const bcrypt = require('bcrypt'); // modulo para criptografar senha
+const mysql = require("./mysql"); // importando funções de conexão com o Mysql
 
 class userService {
     constructor(){
@@ -12,7 +13,7 @@ class userService {
 
     loadUsers(){
         try{
-        if(fs.existsSync(this.filePath)){//verifica se o arquivo existe
+        if(fs.existsSync(this.filePath)) {//verifica se o arquivo existe
             const data = fs.readFileSync(this.filePath);//le o arquivo
             return JSON.parse(data);//transforma json em objeto
         }
@@ -42,10 +43,8 @@ saveUsers(){//função para salvar os arquivos
 
     async addUser(nome, email, senha, endereco, telefone, cpf){//função para adicionar um usuário
         try{
-        const senhaCripto = await bcrypt.hash(senha, 10);
+        const cpfexistente = this.user.some(user => user.cpf === cpf)
         const user = new User(this.nextid++, nome, email, senhaCripto, endereco, telefone, cpf);
-        this.users.push(user);
-        this.saveUsers();
         return user;
     }catch (erro){
         console.log("Erro ao adicionar o usuário", erro)
