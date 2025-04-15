@@ -41,29 +41,23 @@ saveUsers(){//função para salvar os arquivos
     }
 }
 
-    async addUser(nome, email, senha, endereco, telefone, cpf){//função para adicionar um usuário
-        try{
-        const cpfexistente = this.user.some(user => user.cpf === cpf)
-        const user = new User(this.nextid++, nome, email, senhaCripto, endereco, telefone, cpf);
-        return user;
-    }catch (erro){
-        console.log("Erro ao adicionar o usuário", erro)
-    }
-}
-    getUsers(){
-        return this.users
+   
     }
 
-    deleteUser(id){
+    getUsers()
+        return this.users
+    
+
+    deleteUser(id)
         try{
             this.users = this.users.filter(user => user.id !== id);
             this.saveUsers();
         }catch{
             console.log("Erro ao deletar o usuário", erro)
         }
-    }
+    
 
-    updateUser(id, nome, email, senha, endereco, telefone, cpf){
+    updateUser(id, nome, email, senha, endereco, telefone, cpf)
         try{
             const user = this.users.find(user => user.id === id);
             if(!user) return console.log("Usuário não existente/encontrado");
@@ -78,7 +72,6 @@ saveUsers(){//função para salvar os arquivos
         }catch(erro){
             console.log("Erro ao atualizar o usuário", erro)
         }
-    }
-}
+
 
 module.exports = new userService;
