@@ -1,77 +1,71 @@
-const User = require('./user');
-const path = require('path'); // modulo para manipular caminhos
-const fs = require('fs'); // modulo para manipular arquivos
-const bcrypt = require('bcrypt'); // modulo para criptografar senha
-const mysql = require("./mysql"); // importando funções de conexão com o Mysql
+const User = require("./user");
+const path = require('path'); //modulo para manipular caminhos
+const fs = require('fs'); //modulo para manipular arquivos file system
+const bcrypt = require('bcryptjs'); //modulo para criptografar senha
+const mysql = require("./mysql"); // importando funções de conexao com o MySQL
 
 class userService {
-    constructor(){
-        this.filePath = path.join(__dirname, 'user.json');
-        this.users = this.loadUsers();//Array para armazenar user
-        this.nextid = this.getNextId();//icontador para gerar id
-    }
-
-    loadUsers(){
-        try{
-        if(fs.existsSync(this.filePath)) {//verifica se o arquivo existe
-            const data = fs.readFileSync(this.filePath);//le o arquivo
-            return JSON.parse(data);//transforma json em objeto
+    async addUser(nome, email, senha, endereco, telefone, cpf) { //função para adicionar usuario
+        try {
+            const senhaCripto = await bcrypt.hash(senha, 10);
+            const resultados = await mysql.execute(
+                `INSERT INTO usuarios (nome, email, senha, endereco, telefone, cpf)
+                      VALUES (?, ?, ?, ?, ?, ?);`,
+                      [nome, email, senhaCripto, endereco, telefone, cpf]
+            );
+            return resultados;
+        } catch (erro) {
+            console.log('Erro ao adicionar usuario', erro);
+            throw erro;
         }
-    }catch(erro){
-        console.log("Erro ao carregar o arquivo", erro)
-    }
-    return[]
-}
-
-
-getNextId(){ // função para buscar o próximo id
-    try{
-    if(this.users.length === 0) return 1;
-    return Math.max(...this.users.map(user => user.id))+1
-}catch (erro){
-    console.log('Erro ao buscar o id', erro)
-}
-}
-
-saveUsers(){//função para salvar os arquivos
-    try{
-        fs.writeFileSync(this.filePath, JSON.stringify(this.users));
-    }catch(erro){
-        console.log("Erro ao salvar arquivos", erro)
-    }
-}
-
-   
     }
 
-    getUsers()
-        return this.users
-    
-
-    deleteUser(id)
-        try{
-            this.users = this.users.filter(user => user.id !== id);
-            this.saveUsers();
-        }catch{
-            console.log("Erro ao deletar o usuário", erro)
+    async getUser(id) { //função para buscar usuarios
+        try {
+            const resultado = await mysql.execute(
+                `SELECT idusuarioo FROM usuarios WHERE id = ?`, 
+                [id]
+            );
+            console.log("resultado ", resultado);
+            return resultado;
+        } catch (erro) {
+            console.log('Erro ao buscar usuarios', erro);
         }
-    
+    }
 
-    updateUser(id, nome, email, senha, endereco, telefone, cpf)
-        try{
-            const user = this.users.find(user => user.id === id);
-            if(!user) return console.log("Usuário não existente/encontrado");
+    deleteUser(id) {
+        try {
+            const user = this.getUser(id);
+            if (!user) {
+                console.log("Usuario não existe!");
+                return;
+            }
+            
+
+        } catch {
+            console.log('Erro ao deletar usuario', erro);
+        }
+    }
+
+    async updateUser(id, nome, email, endereco, senha, telefone, cpf) {
+        try {
+
+            
+            const senhaCripto = await bcrypt.hash(senha, 10);
             user.nome = nome;
             user.email = email;
-            user.senha = senha;
+            user.senha = senhaCripto;
             user.endereco = endereco;
             user.telefone = telefone;
             user.cpf = cpf;
             this.saveUsers();
             return user;
-        }catch(erro){
-            console.log("Erro ao atualizar o usuário", erro)
+        } catch (erro) {
+            console.log('Erro ao atualizar usuario', erro);
+            throw erro;
         }
+    }
 
+}
 
 module.exports = new userService;
