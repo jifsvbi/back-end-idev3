@@ -36,13 +36,16 @@ class userService {
     deleteUser(id) {
         try {
             const user = this.getUser(id);
-            if (!user) {
+            if (user.length == 0) {
                 console.log("Usuario não existe!");
                 return;
             }
-            
-
-        } catch {
+            const resultado = await mysql.execute(
+                'DELETE FROM usuarios WHERE idusuarioo = ?',
+                [id]
+            );
+             return resultado
+        } catch (erro) {
             console.log('Erro ao deletar usuario', erro);
         }
     }

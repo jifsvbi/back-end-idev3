@@ -6,7 +6,10 @@
         "request": "launch",
         "name": "Debug Aula 3",
         "skipFiles": ["<node_internals>/**"],
-        "program": "${workspaceFolder}/Aula 3.js"
+        "program": "${workspaceFolder}/Aula 3.js",
+        "env": {
+          "NODE_ENV": "development"
+        }
       }
     ]
   }
